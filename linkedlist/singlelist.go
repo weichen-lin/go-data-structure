@@ -132,14 +132,18 @@ func (l *SingleLinkedList) InsertBehindWithIndex(index int, value uuid.UUID) err
 	l.Lock.Lock()
 	defer l.Lock.Unlock()
 
-	if index < 0 {
-		return errors.New("the index is out of range")
+	if index < 0 || index > l.Length {
+		return errors.New("index can not be less than 0")
+	}
+
+	if l.Head == nil {
+		return errors.New("this single linked list is empty")
 	}
 
 	if index == 0 {
-		head := l.Head
-		l.Head = &Node{Value: value}
-		l.Head.Next = head
+		node := &Node{Value: value}
+		node.Next = l.Head.Next
+		l.Head.Next = node
 		l.Length++
 		return nil
 	}
@@ -160,5 +164,5 @@ func (l *SingleLinkedList) InsertBehindWithIndex(index int, value uuid.UUID) err
 		currentNode = currentNode.Next
 		currentIndex++
 	}
-	return errors.New("the index was not found in this single linked list")
+	return errors.New("the index was not found in this single linked list, index must be equal to real position minus 1")
 }

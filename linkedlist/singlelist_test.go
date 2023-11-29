@@ -151,7 +151,7 @@ func Test_Concurrency(t *testing.T) {
 	require.Equal(t, 1000, list.Length)
 }
 
-func Test_Insert_Prepend(t *testing.T) {
+func Test_Insert(t *testing.T) {
 	list := SingleLinkedList{}
 
 	id := uuid.New()
@@ -168,12 +168,33 @@ func Test_Insert_Prepend(t *testing.T) {
 	require.NoError(t, err)
 
 	require.Equal(t, list.Length, 4)
-	require.Equal(t, list.Head.Value, id_4)
+	require.Equal(t, list.Head.Next.Value, id_4)
 
-	err = list.InsertBehindWithIndex(-1, id_4)
+	sec_list := SingleLinkedList{}
+
+	id_5 := uuid.New()
+	err = sec_list.InsertBehindWithIndex(0, id_5)
 	require.Error(t, err)
 
-	err = list.InsertBehindWithIndex(list.Length + 1, id_4)
+	id_6 := uuid.New()
+	err = sec_list.InsertBehindWithIndex(1, id_6)
+	require.Error(t, err)
+}
+
+func Test_Insert_OutofRange(t *testing.T) {
+	list := SingleLinkedList{}
+
+	id := uuid.New()
+	list.Append(id)
+
+	id_2 := uuid.New()
+	list.Append(id_2)
+
+	id_3 := uuid.New()
+	list.Append(id_3)
+
+	id_4 := uuid.New()
+	err := list.InsertBehindWithIndex(3, id_4)
 	require.Error(t, err)
 }
 
