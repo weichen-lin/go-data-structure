@@ -132,7 +132,7 @@ func (l *SingleLinkedList) InsertBehindWithIndex(index int, value uuid.UUID) err
 	l.Lock.Lock()
 	defer l.Lock.Unlock()
 
-	if index < 0 || index > l.Length {
+	if index < 0 {
 		return errors.New("index can not be less than 0")
 	}
 
