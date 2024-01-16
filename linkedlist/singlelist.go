@@ -13,14 +13,14 @@ type Node struct {
 }
 
 type SingleLinkedList struct {
+	sync.Mutex
 	Head   *Node
 	Length int
-	Lock   sync.Mutex
 }
 
 func (l *SingleLinkedList) Append(value uuid.UUID) {
-	l.Lock.Lock()
-	defer l.Lock.Unlock()
+	l.Lock()
+	defer l.Unlock()
 	node := &Node{Value: value}
 
 	if l.Head == nil {
@@ -28,6 +28,7 @@ func (l *SingleLinkedList) Append(value uuid.UUID) {
 	} else {
 		currentNode := l.Head
 
+		// 循環找到最後一個節點
 		for currentNode.Next != nil {
 			currentNode = currentNode.Next
 		}
@@ -39,8 +40,8 @@ func (l *SingleLinkedList) Append(value uuid.UUID) {
 }
 
 func (l *SingleLinkedList) Delete(value uuid.UUID) error {
-	l.Lock.Lock()
-	defer l.Lock.Unlock()
+	l.Lock()
+	defer l.Unlock()
 
 	if l.Head == nil {
 		return errors.New("this single linked list is empty")
@@ -68,8 +69,8 @@ func (l *SingleLinkedList) Delete(value uuid.UUID) error {
 }
 
 func (l *SingleLinkedList) Prepend(value uuid.UUID) {
-	l.Lock.Lock()
-	defer l.Lock.Unlock()
+	l.Lock()
+	defer l.Unlock()
 	node := &Node{Value: value}
 
 	if l.Head == nil {
@@ -83,8 +84,8 @@ func (l *SingleLinkedList) Prepend(value uuid.UUID) {
 }
 
 func (l *SingleLinkedList) Search(value uuid.UUID) (int, error) {
-	l.Lock.Lock()
-	defer l.Lock.Unlock()
+	l.Lock()
+	defer l.Unlock()
 
 	if l.Head == nil {
 		return 0, errors.New("this single linked list is empty")
@@ -106,8 +107,8 @@ func (l *SingleLinkedList) Search(value uuid.UUID) (int, error) {
 }
 
 func (l *SingleLinkedList) ValueOf(index int) (uuid.UUID, error) {
-	l.Lock.Lock()
-	defer l.Lock.Unlock()
+	l.Lock()
+	defer l.Unlock()
 
 	if index < 0 || index > l.Length {
 		return uuid.Nil, errors.New("the index is out of range")
@@ -129,8 +130,8 @@ func (l *SingleLinkedList) ValueOf(index int) (uuid.UUID, error) {
 }
 
 func (l *SingleLinkedList) InsertBehindWithIndex(index int, value uuid.UUID) error {
-	l.Lock.Lock()
-	defer l.Lock.Unlock()
+	l.Lock()
+	defer l.Unlock()
 
 	if index < 0 {
 		return errors.New("index can not be less than 0")
@@ -164,5 +165,6 @@ func (l *SingleLinkedList) InsertBehindWithIndex(index int, value uuid.UUID) err
 		currentNode = currentNode.Next
 		currentIndex++
 	}
-	return errors.New("the index was not found in this single linked list, index must be equal to real position minus 1")
+	
+	return errors.New("the index was not found in this single linked list, largest index must be equal to real position minus 1")
 }
