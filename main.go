@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	linkedList "github.com/weichen-lin/go-data/linkedlist"
+)
 
 func main() {
-	fmt.Print("Hello, World!")
+	a := "abcba"
+
+	test := linkedList.IsPalindrome(a)
+	fmt.Println(test)
 }

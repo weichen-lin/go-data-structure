@@ -1,0 +1,78 @@
+package linkedList
+
+type StringNode struct {
+	Value rune
+	Next  *StringNode
+}
+
+type StringLinkedList struct {
+	Head   *StringNode
+	Length int
+}
+
+func StringToLinkedList(str string) *StringLinkedList {
+	var l StringLinkedList
+	for _, c := range str {
+		if( l.Head == nil ) {
+			l.Head = &StringNode{Value: c}
+		} else {
+			currentNode := l.Head
+			for currentNode.Next != nil {
+				currentNode = currentNode.Next
+			}
+			currentNode.Next = &StringNode{Value: c}
+		}
+		l.Length++
+	}
+	return &l
+}
+
+/* 
+	核心思想：快慢指针，
+	- 快指针每次走两步，慢指针每次走一步。
+		1. 奇數情況 : 當快指針走到鏈表尾部時，慢指針剛好走到鏈表中間。
+		2. 偶數情況 : 當快指針走到鏈表尾部時，慢指針剛好走到鏈表中間的前一個節點。
+	- 找到練表中間的節點後，過程中慢指針所在節點之前的鏈表會被反轉。
+	- 比較慢指針前面被反轉的鏈表與慢指針開始的鏈表是否相同
+*/
+func IsPalindrome(s string) bool {
+	l := StringToLinkedList(s)
+	
+	if l == nil || l.Head == nil {
+		return true
+	}
+
+	slow, fast := l.Head, l.Head
+
+	// 建立一個空 Node
+	var prev *StringNode
+
+	for fast != nil && fast.Next != nil {
+		// 快指針每次走兩步
+		fast = fast.Next.Next
+
+		// 先拿到慢指針下一個的 Node
+		nextNode := slow.Next
+
+		// 將慢指針所在節點之前的鏈表反轉
+		slow.Next = prev
+		prev = slow
+		slow = nextNode
+	}
+
+	// 奇數情況，快指針會走到鏈表尾部，慢指針剛好走到鏈表中間
+	if fast != nil {
+		slow = slow.Next
+	}
+
+	// 比較反轉後的前半部分與後半部分
+	for prev != nil && slow != nil {
+		if prev.Value != slow.Value {
+			return false
+		}
+		prev = prev.Next
+		slow = slow.Next
+	}
+
+	return true
+}
