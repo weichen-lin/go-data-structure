@@ -44,8 +44,8 @@ func IsPalindrome(s string) bool {
 
 	slow, fast := l.Head, l.Head
 
-	// 建立一個空 Node
-	var prev *StringNode
+	// 建立一個空 Node，用來存放慢指針所在節點之前的鏈表的比較起點 Node
+	var nodeStartReverse *StringNode
 
 	for fast != nil && fast.Next != nil {
 		// 快指針每次走兩步
@@ -55,22 +55,30 @@ func IsPalindrome(s string) bool {
 		nextNode := slow.Next
 
 		// 將慢指針所在節點之前的鏈表反轉
-		slow.Next = prev
-		prev = slow
+		slow.Next = nodeStartReverse
+		nodeStartReverse = slow
 		slow = nextNode
 	}
+	
+	// 偶數情況的話，快指針會走到鏈表外部，慢指針剛好走到鏈表中間的後一個節點
+	//   O <- O <- O -> O -> O -> O  -> null
+	//	          起點  慢                快
+	// 慢指針不需要移動
 
-	// 奇數情況，快指針會走到鏈表尾部，慢指針剛好走到鏈表中間
+	// 奇數情況，快指針會走到鏈表最後一位，慢指針剛好走到鏈表中間
+	//   O <- O <- O -> O -> O
+	//      起點    慢        快
+	// 慢需要往後移一個，且慢指針所在節點之前的鏈表已經反轉過了
 	if fast != nil {
 		slow = slow.Next
 	}
 
 	// 比較反轉後的前半部分與後半部分
-	for prev != nil && slow != nil {
-		if prev.Value != slow.Value {
+	for nodeStartReverse != nil && slow != nil {
+		if nodeStartReverse.Value != slow.Value {
 			return false
 		}
-		prev = prev.Next
+		nodeStartReverse = nodeStartReverse.Next
 		slow = slow.Next
 	}
 
