@@ -10,10 +10,11 @@ type StringLinkedList struct {
 	Length int
 }
 
+// 將字串轉換成鏈表，時間複雜度為 O(n2)
 func StringToLinkedList(str string) *StringLinkedList {
 	var l StringLinkedList
 	for _, c := range str {
-		if( l.Head == nil ) {
+		if l.Head == nil {
 			l.Head = &StringNode{Value: c}
 		} else {
 			currentNode := l.Head
@@ -27,7 +28,31 @@ func StringToLinkedList(str string) *StringLinkedList {
 	return &l
 }
 
-/* 
+// 將字串轉換成鏈表，時間複雜度為 O(n)
+func StringToLinkedListV2(str string) *StringLinkedList {
+	var l StringLinkedList
+
+	var temp *StringNode
+
+	for _, c := range str {
+		if l.Head == nil {
+			l.Head = &StringNode{Value: c}
+			temp = l.Head
+		} else {
+			temp.Next = &StringNode{Value: c}
+
+			// 臨時 Node 往後移一個
+			temp = temp.Next
+		}
+		l.Length++
+	}
+	return &l
+}
+
+// 測試一個長度為 223 的字串轉換成鏈表
+// V1 & V2 的時間複雜度差異大約為 5 倍
+
+/*
 	核心思想：快慢指针，
 	- 快指针每次走两步，慢指针每次走一步。
 		1. 奇數情況 : 當快指針走到鏈表尾部時，慢指針剛好走到鏈表中間。
@@ -37,7 +62,7 @@ func StringToLinkedList(str string) *StringLinkedList {
 */
 func IsPalindrome(s string) bool {
 	l := StringToLinkedList(s)
-	
+
 	if l == nil || l.Head == nil {
 		return true
 	}
@@ -59,7 +84,7 @@ func IsPalindrome(s string) bool {
 		nodeStartReverse = slow
 		slow = nextNode
 	}
-	
+
 	// 偶數情況的話，快指針會走到鏈表外部，慢指針剛好走到鏈表中間的後一個節點
 	//   O <- O <- O -> O -> O -> O  -> null
 	//	          起點  慢                快

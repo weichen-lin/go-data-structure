@@ -132,7 +132,6 @@ func Test_ValueOf_Empty(t *testing.T) {
 	require.Error(t, err)
 }
 
-
 func Test_Concurrency(t *testing.T) {
 	list := SingleLinkedList{}
 
@@ -221,7 +220,7 @@ func Test_Insert_Append(t *testing.T) {
 	require.Equal(t, id_append, id_4)
 }
 
-func Test_Insert_Middel(t *testing.T){
+func Test_Insert_Middel(t *testing.T) {
 	list := SingleLinkedList{}
 
 	id := uuid.New()
@@ -244,7 +243,7 @@ func Test_Insert_Middel(t *testing.T){
 	require.Equal(t, id_append, id_4)
 }
 
-func Test_Delete(t *testing.T){
+func Test_Delete(t *testing.T) {
 	list := SingleLinkedList{}
 
 	id := uuid.New()
@@ -263,7 +262,7 @@ func Test_Delete(t *testing.T){
 	require.Equal(t, list.Head.Next.Value, id_3)
 }
 
-func Test_Delete_Not_EXIST(t *testing.T){
+func Test_Delete_Not_EXIST(t *testing.T) {
 	list := SingleLinkedList{}
 
 	id := uuid.New()
@@ -278,4 +277,24 @@ func Test_Delete_Not_EXIST(t *testing.T){
 	id_4 := uuid.New()
 	err := list.Delete(id_4)
 	require.Error(t, err)
+}
+
+func Test_Reverse(t *testing.T) {
+	list := SingleLinkedList{}
+
+	id := uuid.New()
+	list.Append(id)
+
+	id_2 := uuid.New()
+	list.Append(id_2)
+
+	id_3 := uuid.New()
+	list.Append(id_3)
+
+	list.Reverse()
+
+	require.Equal(t, list.Length, 3)
+	require.Equal(t, list.Head.Value, id_3)
+	require.Equal(t, list.Head.Next.Value, id_2)
+	require.Equal(t, list.Head.Next.Next.Value, id)
 }

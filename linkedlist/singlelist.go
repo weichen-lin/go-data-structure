@@ -165,6 +165,33 @@ func (l *SingleLinkedList) InsertBehindWithIndex(index int, value uuid.UUID) err
 		currentNode = currentNode.Next
 		currentIndex++
 	}
-	
+
 	return errors.New("the index was not found in this single linked list, largest index must be equal to real position minus 1")
+}
+
+func (l *SingleLinkedList) Reverse() {
+	l.Lock()
+	defer l.Unlock()
+
+	if l.Head == nil {
+		return
+	}
+
+	if l.Head.Next == nil {
+		return
+	}
+
+	var prev *Node
+	current := l.Head
+	
+	// 思考: 一開始用 current.Next != nil 會有什麼問題?
+	// Head -> node1 -> node2 -> nil
+	// current.Next != nil 只會反轉兩次，實際上要反轉三次
+	for current != nil {
+		next := current.Next
+		current.Next = prev
+		prev = current
+		current = next
+	}
+	l.Head = prev
 }
