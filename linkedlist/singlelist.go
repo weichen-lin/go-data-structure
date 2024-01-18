@@ -183,7 +183,7 @@ func (l *SingleLinkedList) Reverse() {
 
 	var prev *Node
 	current := l.Head
-	
+
 	// 思考: 一開始用 current.Next != nil 會有什麼問題?
 	// Head -> node1 -> node2 -> nil (其實要反轉三次)
 	// current.Next != nil 只會反轉兩次，實際上要反轉三次
