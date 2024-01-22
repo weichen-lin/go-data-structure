@@ -8,19 +8,19 @@ import (
 
 type Node struct {
 	Value uuid.UUID
-	Next *Node
+	Next  *Node
 }
 
 type LinkedListStack struct {
-	sync.Mutex
-	Top *Node
+	sync.RWMutex
+	Top  *Node
 	Size int
 }
 
 func (s *LinkedListStack) Push(value uuid.UUID) {
 	s.Lock()
 	defer s.Unlock()
-	
+
 	if s.Top == nil {
 		node := &Node{
 			Value: value,
@@ -35,9 +35,12 @@ func (s *LinkedListStack) Push(value uuid.UUID) {
 		Next:  s.Top,
 	}
 	s.Top = node
+	s.Size++
 }
 
 func (s *LinkedListStack) Pop() uuid.UUID {
+	s.Lock()
+	defer s.Unlock()
 	if s.Size > 0 {
 		value := s.Top.Value
 		s.Top = s.Top.Next
@@ -48,6 +51,8 @@ func (s *LinkedListStack) Pop() uuid.UUID {
 }
 
 func (s *LinkedListStack) Peek() uuid.UUID {
+	s.RLock()
+	defer s.RUnlock()
 	if s.Size > 0 {
 		return s.Top.Value
 	}
@@ -55,17 +60,24 @@ func (s *LinkedListStack) Peek() uuid.UUID {
 }
 
 func (s *LinkedListStack) IsEmpty() bool {
+	s.RLock()
+	defer s.RUnlock()
 	return s.Size == 0
 }
 
 func (s *LinkedListStack) Clear() {
-
+	// 這邊不能加鎖，會遇到重入鎖的問題
+	// s.Lock()
+	// defer s.Unlock()
 	for s.Size > 0 {
 		s.Pop()
 	}
 }
 
 func (s *LinkedListStack) Contains(value uuid.UUID) bool {
+	s.RLock()
+	defer s.RUnlock()
+
 	for node := s.Top; node != nil; node = node.Next {
 		if node.Value == value {
 			return true
@@ -75,6 +87,8 @@ func (s *LinkedListStack) Contains(value uuid.UUID) bool {
 }
 
 func (s *LinkedListStack) ToSlice() []uuid.UUID {
+	s.RLock()
+	defer s.RUnlock()
 	slice := make([]uuid.UUID, s.Size)
 	for node, i := s.Top, 0; node != nil; node, i = node.Next, i+1 {
 		slice[i] = node.Value
@@ -83,22 +97,27 @@ func (s *LinkedListStack) ToSlice() []uuid.UUID {
 }
 
 func (s *LinkedListStack) Copy() *LinkedListStack {
+	s.RLock()
+	defer s.RUnlock()
 	stack := &LinkedListStack{}
 	for node := s.Top; node != nil; node = node.Next {
 		stack.Push(node.Value)
 	}
+	stack.Reverse()
 	return stack
 }
 
 func (s *LinkedListStack) Reverse() {
-	stack := &LinkedListStack{}
-	for node := s.Top; node != nil; node = node.Next {
-		stack.Push(node.Value)
+	s.Lock()
+	defer s.Unlock()
+
+	var prev *Node
+
+	for current := s.Top; current != nil; {
+		next := current.Next
+		current.Next = prev
+		prev = current
+		current = next
 	}
-	s.Top = stack.Top
+	s.Top = prev
 }
-
-func (s *LinkedListStack) SizeOf() int {
-	return s.Size
-}
-
